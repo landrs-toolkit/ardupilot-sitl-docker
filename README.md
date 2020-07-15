@@ -8,37 +8,41 @@ DockerHub
 
 A pre-built Docker image is available on DockerHub at:
 
-https://hub.docker.com/r/radarku/ardupilot-sitl
+##https://hub.docker.com/r/radarku/ardupilot-sitl
 
 To download it, simply:
 
-`docker pull radarku/ardupilot-sitl`
+##`docker pull radarku/ardupilot-sitl`
  
 and to run it:
 
-`docker run -it --rm -p 5760:5760 radarku/ardupilot-sitl`
-
+##`docker run -it --rm -p 5760:5760 radarku/ardupilot-sitl`
+## docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <CONTAINER ID>
 
 Quick Start
 -----------
 
 If you'd rather build the docker image yourself:
 
-`docker build --tag ardupilot github.com/radarku/ardupilot-sitl-docker`
+#`docker build --tag ardupilot github.com/radarku/ardupilot-sitl-docker`
 
 You can now use the `--build-arg` option to specify which branch or tag in the ardupilot
 repository you'd like to use. Here's an example:
 
-`docker build --tag ardupilot --build-arg COPTER_TAG=Copter-4.0.1 github.com/radarku/ardupilot-sitl-docker`
+#`docker build --tag ardupilot --build-arg COPTER_TAG=Copter-4.0.1 github.com/radarku/ardupilot-sitl-docker`
 
 If no COPTER_TAG is supplied, the build will use the default defined in the Dockerfile, currently set at Copter-4.0.3
 
 To run the image:
 
-`docker run -it --rm -p 5760:5760 ardupilot`
+`docker run -it --rm -p 5760:5760 --env-file env.list sitl:latest`
 
-This will start an ArduCopter SITL on host TCP port 5760, so to connect to it from the host, you could:
+This will start an ArduCopter SITL on host TCP port 5760, so to connect to it from the host through multiple methods:
+Quite likely you will use multiple of these simultaneously
+1. GUIs: Use [MissionPlanner]() or [QGroundControl]() to connect to SITL in the same was as you would a real drone, plan and fly a mission
+2. Use the script in this repo to monitor the telemetry output from a mission 
 
+3. Use mavproxy to monitor and control the simulation
 `mavproxy.py --master=tcp:localhost:5760`
 
 Options
@@ -69,8 +73,8 @@ So, for example, you could issue a command such as:
 
 ```
 docker run -it --rm -p 5761:5760 \
-   --env VEHICLE=APMRover2 \
-   --env MODEL=rover-skid \
+   --env VEHICLE=Arducopter \
+   --env MODEL=hexa \
    --env LAT=39.9656 \
    --env LON=-75.1810 \
    --env ALT=276 \
@@ -79,8 +83,11 @@ docker run -it --rm -p 5761:5760 \
    ardupilot
 ```
 
-Vehicles and their corresponding models are listed below:
-
+Valid env values are explained below:
+* SPEEDUP: Multiplications of normal wall-clock time to speed up the simulation
+* LAN, LON, ALT: Starting point
+* DIR
+* VEHICLE:MODELS
 ```
 ArduCopter: octa-quad|tri|singlecopter|firefly|gazebo-
     iris|calibration|hexa|heli|+|heli-compound|dodeca-
